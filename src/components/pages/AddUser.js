@@ -1,19 +1,15 @@
 import React from 'react';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
+import { addUser } from '../../redux/action/actions';
 
-const AddUser = () => {
+const AddUser = ({ users, addingUser }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [number, setNumber] = useState('');
 
-  const users = useSelector((state) => state);
-  console.log(users);
-
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -44,7 +40,7 @@ const AddUser = () => {
       number,
     };
 
-    dispatch({ type: 'ADD_USER', payload: data });
+    addingUser(data);
     toast.success('User Added Successfully');
     navigate('/');
   };
@@ -96,4 +92,16 @@ const AddUser = () => {
   );
 };
 
-export default AddUser;
+const mapStateToProps = (state) => {
+  return {
+    users: state,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addingUser: (user) => dispatch(addUser(user)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddUser);

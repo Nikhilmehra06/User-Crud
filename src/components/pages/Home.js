@@ -1,16 +1,9 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-const Home = () => {
-  const users = useSelector((state) => state);
-  const dispatch = useDispatch();
-  const deleteUser = (id) => {
-    dispatch({ type: 'DELETE_USER', payload: id });
-    toast.success('User Deleted successfully !');
-  };
-
+import { connect } from 'react-redux';
+import { deleteUser } from '../../redux/action/actions';
+const Home = ({ users, delUser }) => {
   return (
     <>
       <h1 className="display-3 my-5 text-center">User List</h1>
@@ -50,7 +43,10 @@ const Home = () => {
                       <button
                         type="button "
                         className="btn btn-small btn-danger ms-2"
-                        onClick={() => deleteUser(user.id)}
+                        onClick={() => {
+                          delUser(user.id);
+                          toast.success('User Deleted successfully !');
+                        }}
                       >
                         Delete
                       </button>
@@ -66,4 +62,16 @@ const Home = () => {
   );
 };
 
-export default Home;
+const mapStateToProps = (state) => {
+  return {
+    users: state,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    delUser: (id) => dispatch(deleteUser(id)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

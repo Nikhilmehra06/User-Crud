@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
+import { updateUser } from '../../redux/action/actions';
 
-const EditUser = () => {
+const EditUser = ({ users, editUser }) => {
   const { id } = useParams();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const users = useSelector((state) => state);
 
   const currentUser = users.find((user) => user.id === parseInt(id));
   const [name, setName] = useState('');
@@ -51,7 +49,7 @@ const EditUser = () => {
       number,
     };
 
-    dispatch({ type: 'UPDATE_USER', payload: data });
+    editUser(data);
     toast.success('User UPDATE Successfully');
     navigate('/');
     console.log(data);
@@ -61,7 +59,7 @@ const EditUser = () => {
     <div className="container">
       {currentUser ? (
         <>
-          <h1 className="display-3 my-5 text-center">Edit User: {id}</h1>
+          <h1 className="display-3 my-5 text-center">Edit User</h1>
           <div className="row">
             <div className="col-md-6 shadow-lg mx-auto p-5">
               <form onSubmit={handleSubmit}>
@@ -108,11 +106,23 @@ const EditUser = () => {
         </>
       ) : (
         <h1 className="display-3 my-5 text-center">
-          user Contact with id {id} not exists
+          user with id {id} not exists
         </h1>
       )}
     </div>
   );
 };
 
-export default EditUser;
+const mapStateToProps = (state) => {
+  return {
+    users: state,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    editUser: (id) => dispatch(updateUser(id)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditUser);
